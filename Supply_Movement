@@ -1,0 +1,379 @@
+'SAÍDA DE MATERIAIS
+
+Private Sub cbNomeCliente_Change()
+    If cbNomeCliente = vbNullString Then
+        txtCCusto.Value = vbNullString
+        txtEmail.Value = vbNullString
+        Exit Sub
+    Else
+        indice = WorksheetFunction.Match(cbNomeCliente.Value, Planilha7.Range("C:C"), 0)
+        txtCCusto.Value = Planilha7.Cells(indice, 5)
+        txtEmail.Value = Planilha7.Cells(indice, 7)
+    End If
+End Sub
+
+Private Sub cbProdutoSaida_Change()
+    If cbProdutoSaida = vbNullString Then
+        txtUnd.Value = vbNullString
+        txtCod.Value = vbNullString
+        txtValor.Value = vbNullString
+        txtEstoque.Value = vbNullString
+        Exit Sub
+    Else
+        indice2 = WorksheetFunction.Match(cbProdutoSaida.Value, Planilha1.Range("B:B"), 0)
+        txtUnd.Value = Planilha1.Cells(indice2, 5)
+        txtCod.Value = Planilha1.Cells(indice2, 1)
+        txtValor.Value = Planilha1.Cells(indice2, 7)
+        If Planilha1.Cells(indice2, 8) = vbNullString Then
+            txtEstoque.Value = 0
+        Else
+            txtEstoque.Value = Planilha1.Cells(indice2, 8)
+        End If
+    End If
+End Sub
+
+Private Sub cmdAdd_Click()
+    contador = lstSaida.ListCount
+    
+    If contador = 0 Then
+        With lstSaida
+        .AddItem
+        .List(contador, 0) = "CÓDIGO"
+        .List(contador, 1) = "PRODUTO"
+        .List(contador, 2) = "QTD"
+        .List(contador, 3) = "UND"
+        .List(contador, 4) = "VALOR U."
+        .List(contador, 5) = "VALOR TOTAL"
+        End With
+        
+        contador = contador + 1
+        
+        With lstSaida
+        .AddItem
+        .List(contador, 0) = txtCod.Value
+        .List(contador, 1) = cbProdutoSaida.Value
+        .List(contador, 2) = txtQtdSaida.Value
+        .List(contador, 3) = txtUnd.Value
+        .List(contador, 4) = Format(txtValor.Value, "Currency")
+        If txtValor.Value = vbNullString Then
+            .List(contador, 5) = Format(0, "Currency")
+        Else
+            .List(contador, 5) = WorksheetFunction.IfError(Format(txtValor.Value * txtQtdSaida.Value, "Currency"), 0)
+        End If
+        End With
+    Else
+        With lstSaida
+        .AddItem
+        .List(contador, 0) = txtCod.Value
+        .List(contador, 1) = cbProdutoSaida.Value
+        .List(contador, 2) = txtQtdSaida.Value
+        .List(contador, 3) = txtUnd.Value
+        .List(contador, 4) = Format(txtValor.Value, "Currency")
+        If txtValor.Value = vbNullString Then
+            .List(contador, 5) = Format(0, "Currency")
+        Else
+            .List(contador, 5) = WorksheetFunction.IfError(Format(txtValor.Value * txtQtdSaida.Value, "Currency"), 0)
+        End If
+        End With
+    End If
+        
+    Dim soma As Double
+    
+    For i = 1 To lstSaida.ListCount - 1
+        soma = soma + lstSaida.List(i, 5)
+    Next
+    
+    txtTotal.Value = Format(soma, "Currency")
+    txtItensT.Value = contador
+End Sub
+
+Private Sub cmdCancelar_Click()
+    Unload Me
+    Planilha4.Protect Password:="Supersan"
+End Sub
+
+Private Sub cmdRmv_Click()
+    Dim decide As VbMsgBoxResult
+    Dim soma As Double
+    soma = 0
+    
+    decide = MsgBox("Confirmar Exclusão?", vbYesNo, "ATENÇÃO")
+    
+    If decide = vbYes Then
+        With lstSaida
+            .RemoveItem (.ListIndex)
+        End With
+    End If
+    
+    For i = 1 To lstSaida.ListCount - 1
+        soma = soma + lstSaida.List(i, 5)
+    Next
+    
+    txtTotal.Value = Format(soma, "currency")
+    txtItensT.Value = lstSaida.ListCount - 1
+End Sub
+
+Private Sub cmdSalvarSaida_Click()
+    contador = lstSaida.ListCount
+    Planilha4.Unprotect Password:="Supersan"
+    indiceMov = WorksheetFunction.CountA(Planilha4.Range("A:A")) + 1
+    indicecadpro = WorksheetFunction.Match(txtCod.Value, Planilha1.Range("A:A"), 0)
+    indiceCod = WorksheetFunction.CountA(WorksheetFunction.Unique(Planilha4.Range("B:B"))) - 1
+    
+    Dim decisao As VbMsgBoxResult
+    
+    decisao = MsgBox("Confirmar Requisição?", vbYesNo, "ATENÇÃO")
+    If decisao = vbYes Then
+        For i = 1 To contador - 1
+            Planilha4.Cells(indiceMov, 1) = txtLog.Value
+            Planilha4.Cells(indiceMov, 2) = "SAI" + Format(indiceCod, "00000")
+            Planilha4.Cells(indiceMov, 3) = cbNomeCliente.Value
+            Planilha4.Cells(indiceMov, 4) = txtCCusto.Value
+            Planilha4.Cells(indiceMov, 6) = lstSaida.List(i, 0)
+            Planilha4.Cells(indiceMov, 7) = lstSaida.List(i, 1)
+            Planilha4.Cells(indiceMov, 8) = lstSaida.List(i, 2)
+            Planilha4.Cells(indiceMov, 9) = lstSaida.List(i, 3)
+            Planilha4.Cells(indiceMov, 10) = Planilha1.Cells(indicecadpro, 7)
+            Planilha4.Cells(indiceMov, 11) = lstSaida.List(i, 5)
+            Planilha1.Unprotect Password:="Supersan"
+            Planilha1.Cells(indicecadpro, 8) = Planilha1.Cells(indicecadpro, 8) - lstSaida.List(i, 2)
+            Planilha1.Protect Password:="Supersan"
+            
+            indiceMov = indiceMov + 1
+        Next
+        
+        Planilha4.Protect Password:="Supersan"
+        Unload Me
+    End If
+    
+End Sub
+
+Private Sub cmdSalvaIncluirSaida_Click()
+    contador = lstSaida.ListCount
+    Planilha4.Unprotect Password:="Supersan"
+    indiceMov = WorksheetFunction.CountA(Planilha4.Range("A:A")) + 1
+    indicecadpro = WorksheetFunction.Match(txtCod.Value, Planilha1.Range("A:A"), 0)
+    indiceCod = WorksheetFunction.CountA(WorksheetFunction.Unique(Planilha4.Range("B:B"))) - 1
+    
+    Dim decisao As VbMsgBoxResult
+    
+    decisao = MsgBox("Confirmar Requisição?", vbYesNo, "ATENÇÃO")
+    If decisao = vbYes Then
+        For i = 1 To contador - 1
+            Planilha4.Cells(indiceMov, 1) = txtLog.Value
+            Planilha4.Cells(indiceMov, 2) = "SAI" + Format(indiceCod, "00000")
+            Planilha4.Cells(indiceMov, 3) = cbNomeCliente.Value
+            Planilha4.Cells(indiceMov, 4) = txtCCusto.Value
+            Planilha4.Cells(indiceMov, 6) = lstSaida.List(i, 0)
+            Planilha4.Cells(indiceMov, 7) = lstSaida.List(i, 1)
+            Planilha4.Cells(indiceMov, 8) = lstSaida.List(i, 2)
+            Planilha4.Cells(indiceMov, 9) = lstSaida.List(i, 3)
+            Planilha4.Cells(indiceMov, 10) = Planilha1.Cells(indicecadpro, 7)
+            Planilha4.Cells(indiceMov, 11) = lstSaida.List(i, 5)
+            Planilha1.Unprotect Password:="Supersan"
+            Planilha1.Cells(indicecadpro, 8) = Planilha1.Cells(indicecadpro, 8) - lstSaida.List(i, 2)
+            Planilha1.Protect Password:="Supersan"
+            
+            indiceMov = indiceMov + 1
+        Next
+        
+        Planilha4.Protect Password:="Supersan"
+        Unload Me
+    End If
+    fluxoProdutos.Show
+End Sub
+
+
+Private Sub MultiPage1_Change()
+
+End Sub
+
+Private Sub UserForm_Activate()
+        Planilha4.Unprotect Password:="Supersan"
+    txtLog.Value = VBA.Now
+    cbNomeCliente.RowSource = "NomeCliente"
+    cbProdutoSaida.RowSource = "produtos"
+    cbFornecedor.RowSource = "FANTASIA"
+    cbProdutoEntrada.RowSource = "produtos"
+End Sub
+
+
+
+
+
+
+'ENTRADA DE MATERIAIS
+
+Private Sub cmdIncluirEntrada_Click()
+    contador = lstEntrada.ListCount
+    
+    If contador = 0 Then
+        With lstEntrada
+        .AddItem
+        .List(contador, 0) = "CÓDIGO"
+        .List(contador, 1) = "PRODUTO"
+        .List(contador, 2) = "QTD"
+        .List(contador, 3) = "UND"
+        .List(contador, 4) = "VALOR U."
+        .List(contador, 5) = "VALOR TOTAL"
+        End With
+        
+        contador = contador + 1
+        
+        With lstEntrada
+        .AddItem
+        .List(contador, 0) = txtCodEntrada.Value
+        .List(contador, 1) = cbProdutoEntrada.Value
+        .List(contador, 2) = txtQtdEntrada.Value
+        .List(contador, 3) = txtUndEntrada.Value
+        .List(contador, 4) = Format(txtValorEntrada.Value, "Currency")
+        If txtValorEntrada.Value = vbNullString Then
+            .List(contador, 5) = Format(0, "Currency")
+        Else
+            .List(contador, 5) = WorksheetFunction.IfError(Format(txtValorEntrada.Value * txtQtdEntrada.Value, "Currency"), 0)
+        End If
+        End With
+    Else
+        With lstEntrada
+        .AddItem
+        .List(contador, 0) = txtCodEntrada.Value
+        .List(contador, 1) = cbProdutoEntrada.Value
+        .List(contador, 2) = txtQtdEntrada.Value
+        .List(contador, 3) = txtUndEntrada.Value
+        .List(contador, 4) = Format(txtValorEntrada.Value, "Currency")
+        If txtValorEntrada.Value = vbNullString Then
+            .List(contador, 5) = Format(0, "Currency")
+        Else
+            .List(contador, 5) = WorksheetFunction.IfError(Format(txtValorEntrada.Value * txtQtdEntrada.Value, "Currency"), 0)
+        End If
+        End With
+    End If
+    
+    Dim soma As Double
+    
+    For i = 1 To lstEntrada.ListCount - 1
+        soma = soma + lstEntrada.List(i, 5)
+    Next
+    
+    txtTotalEntrada.Value = Format(soma, "Currency")
+    txtItensEntrada.Value = lstEntrada.ListCount - 1
+End Sub
+
+Private Sub cmdSalvarIncluirEntrada_Click()
+    contador = lstEntrada.ListCount
+    Planilha4.Unprotect Password:="Supersan"
+    indiceMov = WorksheetFunction.CountA(Planilha4.Range("A:A")) + 1
+    indicecadpro = WorksheetFunction.Match(txtCodEntrada.Value, Planilha1.Range("A:A"), 0)
+    indiceCod = WorksheetFunction.CountA(WorksheetFunction.Unique(Planilha4.Range("B:B"))) - 1
+    
+    Dim decisao As VbMsgBoxResult
+    
+    decisao = MsgBox("Confirmar Requisição?", vbYesNo, "ATENÇÃO")
+    If decisao = vbYes Then
+        For i = 1 To contador - 1
+            Planilha4.Cells(indiceMov, 1) = txtLog.Value
+            Planilha4.Cells(indiceMov, 2) = "ENT" + Format(indiceCod, "00000")
+            Planilha4.Cells(indiceMov, 3) = cbNomeFornecedor.Value
+            Planilha4.Cells(indiceMov, 5) = lstEntrada.List(i, 0)
+            Planilha4.Cells(indiceMov, 7) = lstEntrada.List(i, 1)
+            Planilha4.Cells(indiceMov, 8) = lstEntrada.List(i, 2)
+            Planilha4.Cells(indiceMov, 9) = lstEntrada.List(i, 3)
+            Planilha4.Cells(indiceMov, 10) = lstEntrada.List(i, 4)
+            Planilha4.Cells(indiceMov, 11) = lstEntrada.List(i, 5)
+            Planilha1.Unprotect Password:="Supersan"
+            Planilha1.Cells(indicecadpro, 8) = Planilha1.Cells(indicecadpro, 8) + lstEntrada.List(i, 2)
+            Planilha1.Cells(indicecadpro, 7) = lstEntrada.List(i, 4)
+            Planilha1.Protect Password:="Supersan"
+            
+            indiceMov = indiceMov + 1
+        Next
+        
+        Planilha4.Protect Password:="Supersan"
+        Unload Me
+    End If
+    fluxoProdutos.Show
+End Sub
+Private Sub cmdSalvarEntrada_Click()
+    contador = lstEntrada.ListCount
+    Planilha4.Unprotect Password:="Supersan"
+    indiceMov = WorksheetFunction.CountA(Planilha4.Range("A:A")) + 1
+    indicecadpro = WorksheetFunction.Match(txtCodEntrada.Value, Planilha1.Range("A:A"), 0)
+    indiceCod = WorksheetFunction.CountA(WorksheetFunction.Unique(Planilha4.Range("B:B"))) - 1
+    
+    Dim decisao As VbMsgBoxResult
+    
+    decisao = MsgBox("Confirmar Requisição?", vbYesNo, "ATENÇÃO")
+    If decisao = vbYes Then
+        For i = 1 To contador - 1
+            Planilha4.Cells(indiceMov, 1) = txtLog.Value
+            Planilha4.Cells(indiceMov, 2) = "ENT" + Format(indiceCod, "00000")
+            Planilha4.Cells(indiceMov, 5) = cbFornecedor.Value
+            Planilha4.Cells(indiceMov, 6) = lstEntrada.List(i, 0)
+            Planilha4.Cells(indiceMov, 7) = lstEntrada.List(i, 1)
+            Planilha4.Cells(indiceMov, 8) = lstEntrada.List(i, 2)
+            Planilha4.Cells(indiceMov, 9) = lstEntrada.List(i, 3)
+            Planilha4.Cells(indiceMov, 10) = lstEntrada.List(i, 4)
+            Planilha4.Cells(indiceMov, 11) = lstEntrada.List(i, 5)
+            Planilha1.Unprotect Password:="Supersan"
+            Planilha1.Cells(indicecadpro, 8) = Planilha1.Cells(indicecadpro, 8) + lstEntrada.List(i, 2)
+            Planilha1.Cells(indicecadpro, 7) = lstEntrada.List(i, 4)
+            Planilha1.Protect Password:="Supersan"
+            
+            indiceMov = indiceMov + 1
+        Next
+        
+        Planilha4.Protect Password:="Supersan"
+        Unload Me
+    End If
+End Sub
+Private Sub cmdCancelarEntrada_Click()
+    Unload Me
+    Planilha4.Protect Password:="Supersan"
+End Sub
+Private Sub cmdExcluirEntrada_Click()
+    Dim decide As VbMsgBoxResult
+    Dim soma As Double
+    soma = 0
+    
+    decide = MsgBox("Confirmar Exclusão?", vbYesNo, "ATENÇÃO")
+    
+    If decide = vbYes Then
+        With lstEntrada
+            .RemoveItem (.ListIndex)
+        End With
+    End If
+    
+    For i = 1 To lstEntrada.ListCount - 1
+        soma = soma + lstEntrada.List(i, 5)
+    Next
+    
+    txtTotalEntrada.Value = Format(soma, "currency")
+    txtItensEntrada.Value = lstEntrada.ListCount - 1
+End Sub
+Private Sub cbProdutoEntrada_Change()
+    If cbProdutoEntrada = vbNullString Then
+        txtUndEntrada.Value = vbNullString
+        txtCodEntrada.Value = vbNullString
+        txtEstoqueEntrada.Value = vbNullString
+        Exit Sub
+    Else:
+        indice2 = WorksheetFunction.Match(cbProdutoEntrada.Value, Planilha1.Range("B:B"), 0)
+        txtUndEntrada.Value = Planilha1.Cells(indice2, 5)
+        txtCodEntrada.Value = Planilha1.Cells(indice2, 1)
+        If Planilha1.Cells(indice2, 8) = vbNullString Then
+            txtEstoqueEntrada.Value = 0
+        Else
+            txtEstoqueEntrada.Value = Planilha1.Cells(indice2, 8)
+        End If
+    End If
+End Sub
+Private Sub cbFornecedor_Change()
+    If cbFornecedor = vbNullString Then
+        txtCNPJ.Value = vbNullString
+        Exit Sub
+    Else
+        indice = WorksheetFunction.Match(cbFornecedor.Value, Planilha3.Range("D:D"), 0)
+        txtCNPJ.Value = Planilha3.Cells(indice, 2)
+    End If
+End Sub
+
