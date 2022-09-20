@@ -1,0 +1,119 @@
+Private Sub cmdCancelar_Click()
+    Unload Me
+    Planilha1.Protect Password:="Supersan"
+End Sub
+
+Private Sub txtDescricao_Change()
+    txtDescricao = UCase(txtDescricao)
+End Sub
+
+Private Sub txtQtdP_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 Then
+        If KeyAscii <> 44 Then
+            KeyAscii = 0
+        End If
+    End If
+End Sub
+
+Private Sub txtNomeProduto_Change()
+    txtNomeProduto = UCase(txtNomeProduto)
+End Sub
+
+'CONDIÇÃO INICIAL
+Function fnInicial()
+    cmdEditar.Visible = False
+    cmdVoltar.Visible = False
+    cmdSalvar.Visible = False
+    cmdPesquisar.Visible = True
+    cmdCancelar.Visible = True
+    txtNomeProduto.Visible = False
+    cbNomeProduto.Visible = True
+End Function
+
+'CONDIÇÃO EDITAR
+Function fnEditar()
+    cmdEditar.Visible = True
+    cmdVoltar.Visible = True
+    cmdSalvar.Visible = True
+    cmdPesquisar.Visible = False
+    cmdCancelar.Visible = False
+    txtNomeProduto.Visible = True
+    cbNomeProduto.Visible = False
+End Function
+
+'MOSTRAR VALORES
+Function Mostrar()
+    indice = WorksheetFunction.Match(cbNomeProduto.Value, Planilha1.Range("B:B"), 0)
+    
+    txtCodProduto = Cells(indice, 1).Value
+    cbcat = Cells(indice, 3).Value
+    txtQtdP = Cells(indice, 4).Value
+    cbund = Cells(indice, 5).Value
+    txtDescricao = Cells(indice, 6).Value
+    txtEst = Cells(indice, 8).Value
+    txtEstMin = Cells(indice, 9).Value
+    
+End Function
+
+'BLOQUEAR TXT BOX
+Function BloqTxt()
+    cbcat.Locked = True
+    txtQtdP.Locked = True
+    cbund.Locked = True
+    txtDescricao.Locked = True
+    txtEst.Locked = True
+    txtEstMin.Locked = True
+End Function
+
+'DESBLOQUEAR TXT BOX
+Function DesbloqTxt()
+    cbcat.Locked = False
+    txtQtdP.Locked = False
+    cbund.Locked = False
+    txtDescricao.Locked = False
+    txtEst.Locked = False
+    txtEstMin.Locked = False
+End Function
+
+Private Sub UserForm_Activate()
+    cbNomeProduto.RowSource = "produtos"
+    fnInicial
+    BloqTxt
+End Sub
+
+Private Sub cmdPesquisar_Click()
+    Mostrar
+    cmdEditar.Visible = True
+End Sub
+
+Private Sub cmdEditar_Click()
+    fnEditar
+    txtNomeProduto = cbNomeProduto.Value
+    DesbloqTxt
+End Sub
+
+Private Sub cmdVoltar_Click()
+    Unload Me
+    visProdutos.Show
+End Sub
+
+Private Sub cmdSalvar_Click()
+    Planilha1.Unprotect Password:="Supersan"
+    indice = WorksheetFunction.Match(txtCodProduto.Value, Planilha1.Range("A:A"), 0)
+    
+    Dim escolha As VbMsgBoxResult
+    
+    escolha = MsgBox("Confirmar Alteração?", vbYesNo, "ATENÇÃO")
+    
+    If escolha = vbYes Then
+        Cells(indice, 2) = txtNomeProduto.Value
+        Cells(indice, 3) = cbcat.Value
+        Cells(indice, 4) = txtQtdP.Value
+        Cells(indice, 5) = cbund.Value
+        Cells(indice, 6) = txtDescricao.Value
+        
+        Planilha1.Protect Password:="Supersan"
+        Unload Me
+        visProdutos.Show
+    End If
+End Sub
