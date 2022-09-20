@@ -1,0 +1,245 @@
+'FUNÇÃO DO BOTÃO CANCELAR
+Private Sub cmdCancelar_Click()
+    Unload Me
+End Sub
+
+'EXIBINDO E OCULTANDO BUTÕES NO COMANDO EDITAR
+Private Sub cmdEditar_Click()
+    vsEditar
+    txtNomeFantasia = cbNomeFantasia.Value
+    txtCodFornecedor.Enabled = False
+    'HABILITAR AS TXTBOX PARA EDIÇÃO
+    HabilitarTxtbox
+    
+End Sub
+
+'BOTÃO PARA PESQUISAR O VALOR INSERIDO EM NOME FANTASIA
+Private Sub cmdPesquisar_Click()
+    
+    HabilitarTxtbox
+    
+    On Error GoTo DoNothing
+    
+    InserirDados
+    
+    cmdEditar.Visible = True
+
+DoNothing:
+    
+    DesabilitarTxtbox
+    
+End Sub
+
+'SALVAR AS INFORMAÇÕES EDITADAS
+Private Sub cmdSalvar_Click()
+    Planilha3.Unprotect Password:="Supersan"
+    indice = WorksheetFunction.Match(txtCodFornecedor, Range("A:A"), 0)
+    
+    Dim decisao As VbMsgBoxResult
+    
+    decisao = MsgBox("CONFIRMAR CADASTRO?", vbYesNo, "ATENÇÃO")
+    If decisao = vbYes Then
+        Cells(indice, 1).Value = txtCodFornecedor
+        Cells(indice, 3).Value = txtRazaoSocial
+        Cells(indice, 2).Value = txtCNPJFornecedor
+        Cells(indice, 4).Value = txtNomeFantasia
+        Cells(indice, 5).Value = txtCEP
+        Cells(indice, 6).Value = txtLogradouro
+        Cells(indice, 7).Value = txtNumero
+        Cells(indice, 8).Value = txtComplemento
+        Cells(indice, 9).Value = txtBairro
+        Cells(indice, 10).Value = txtMunicipio
+        Cells(indice, 11).Value = cbUF
+        Cells(indice, 12).Value = txtSegmento
+    End If
+    Planilha3.Protect Password:="Supersan"
+    vsPesquisar
+End Sub
+
+'Função do botão voltar
+Private Sub cmdVoltar_Click()
+    vsPesquisar
+    DesabilitarTxtbox
+End Sub
+
+'DEFININDO AS INFORMAÇÕES DO ROWSOURCE NOME FANTASIA
+Private Sub UserForm_Activate()
+    cbNomeFantasia.RowSource = "FANTASIA"
+    vsPesquisar
+    DesabilitarTxtbox
+End Sub
+
+'Lista de valores do combobox
+Private Sub cbNomeFantasia_Change()
+    cbNomeFantasia = UCase(cbNomeFantasia)
+End Sub
+
+'HABILITA A EDIÇÃO DOS TEXTBOX DO FORM
+Private Sub HabilitarTxtbox()
+    txtCodFornecedor.Enabled = True
+    txtCNPJFornecedor.Enabled = True
+    txtRazaoSocial.Enabled = True
+    txtCEP.Enabled = True
+    txtLogradouro.Enabled = True
+    txtNumero.Enabled = True
+    txtComplemento.Enabled = True
+    txtBairro.Enabled = True
+    txtMunicipio.Enabled = True
+    txtUF.Enabled = True
+    txtSegmento.Enabled = True
+End Sub
+
+'DESABILITA A EDIÇÃO DOS TEXTBOX DO FORM
+Private Sub DesabilitarTxtbox()
+    txtCodFornecedor.Enabled = False
+    txtCNPJFornecedor.Enabled = False
+    txtRazaoSocial.Enabled = False
+    txtCEP.Enabled = False
+    txtLogradouro.Enabled = False
+    txtNumero.Enabled = False
+    txtComplemento.Enabled = False
+    txtBairro.Enabled = False
+    txtMunicipio.Enabled = False
+    txtUF.Enabled = False
+    txtSegmento.Enabled = False
+End Sub
+
+'INSERIR DADOS NA POSIÇÃO DEFINIDA
+Private Sub InserirDados()
+    indice = WorksheetFunction.Match(cbNomeFantasia.Value, Range("D:D"), 0)
+
+    txtCodFornecedor = Cells(indice, 1).Value
+    txtRazaoSocial = Cells(indice, 3).Value
+    txtCNPJFornecedor = Cells(indice, 2).Value
+    txtCEP = Cells(indice, 5).Value
+    txtLogradouro = Cells(indice, 6).Value
+    txtNumero = Cells(indice, 7).Value
+    txtComplemento = Cells(indice, 8).Value
+    txtBairro = Cells(indice, 9).Value
+    txtMunicipio = Cells(indice, 10).Value
+    txtUF = Cells(indice, 11).Value
+    txtSegmento = Cells(indice, 12).Value
+End Sub
+
+'FORMATANDO O CAMPO DE RAZÃO SOCIAL PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtRazaoSocial_Change()
+    txtRazaoSocial = UCase(txtRazaoSocial)
+End Sub
+
+'FORMATANDO O CAMPO DE CNPJ PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtCNPJFornecedor_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+    
+    If Len(txtCNPJFornecedor) = 2 Then
+        txtCNPJFornecedor = txtCNPJFornecedor + "."
+    End If
+    If Len(txtCNPJFornecedor) = 6 Then
+        txtCNPJFornecedor = txtCNPJFornecedor + "."
+    End If
+    
+    If Len(txtCNPJFornecedor) = 10 Then
+        txtCNPJFornecedor = txtCNPJFornecedor + "/"
+    End If
+    If Len(txtCNPJFornecedor) = 15 Then
+        txtCNPJFornecedor = txtCNPJFornecedor + "-"
+    End If
+End Sub
+
+'FORMATANDO O CAMPO DE NOME FANTASIA PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtNomeFantasia_Change()
+    txtNomeFantasia = UCase(txtNomeFantasia)
+End Sub
+
+'FORMATANDO O CAMPO DE CEP PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtCEP_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+    
+    If Len(txtCEP) = 2 Then
+        txtCEP = txtCEP + "."
+    End If
+    If Len(txtCEP) = 6 Then
+        txtCEP = txtCEP + "-"
+    End If
+
+End Sub
+
+'FORMATANDO O CAMPO DE LOGRADOURO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtLogradouro_Change()
+    txtLogradouro = UCase(txtLogradouro)
+End Sub
+
+Private Sub txtLogradouro_Change_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 65 Or KeyAscii > 122 And (KeyAscii <> 8 And KeyAscii <> 13 And KeyAscii <> 32) Then
+        KeyAscii = 0
+    End If
+End Sub
+
+'FORMATANDO O CAMPO DE BAIRRO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtBairro_Change()
+    txtBairro = UCase(txtBairro)
+End Sub
+
+'FORMATANDO O CAMPO DE MUNICÍPIO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtMunicipio_Change()
+    txtMunicipio = UCase(txtMunicipio)
+End Sub
+
+Private Sub txtMunicipio_Change_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 65 Or KeyAscii > 122 And (KeyAscii <> 8 And KeyAscii <> 13 And KeyAscii <> 32) Then
+        KeyAscii = 0
+    End If
+End Sub
+
+'FORMATANDO O CAMPO SEGMENTO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtSegmento_Change()
+    txtSegmento = UCase(txtSegmento)
+End Sub
+
+Private Sub txtSegmento_Change_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 65 Or KeyAscii > 122 And (KeyAscii <> 8 And KeyAscii <> 13 And KeyAscii <> 32) Then
+        KeyAscii = 0
+    End If
+End Sub
+
+'FORMATANDO O CAMPO NUMERO PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtNumero_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+End Sub
+
+'FORMATANDO O CAMPO COMPLEMENTO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtComplemento_Change()
+    txtComplemento = UCase(txtComplemento)
+End Sub
+
+'ESTADO PESQUISAR
+Private Sub vsPesquisar()
+    cmdCancelar.Visible = True
+    cmdPesquisar.Visible = True
+    cmdEditar.Visible = False
+    cmdVoltar.Visible = False
+    cmdSalvar.Visible = False
+    cbNomeFantasia.Visible = True
+    txtNomeFantasia.Visible = False
+End Sub
+
+'ESTADO EDITAR
+Private Sub vsEditar()
+    cmdCancelar.Visible = False
+    cmdPesquisar.Visible = False
+    cmdEditar.Visible = False
+    cmdVoltar.Visible = True
+    cmdSalvar.Visible = True
+    cbNomeFantasia.Visible = False
+    txtNomeFantasia.Visible = True
+End Sub
+
+Private Sub UserForm_Terminate()
+    Planilha3.Protect Password:="Supersan"
+End Sub
