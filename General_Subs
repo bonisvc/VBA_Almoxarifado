@@ -1,0 +1,66 @@
+'''Vai para o painel
+Sub Painel()
+    Planilha6.Select
+End Sub
+
+'''Vai para a planilha de cadastro de materiais
+Sub produtos()
+    Planilha1.Select
+End Sub
+
+'''Vai para a planilha de cadastro de clientes
+Sub clientes()
+    Planilha7.Select
+End Sub
+
+'''Vai para a planilha de movimentação de materiais
+Sub movimentos()
+    Planilha4.Select
+End Sub
+
+'''Vai para a planilha de cadastro de fornecedores
+Sub fornecedor()
+    Planilha3.Select
+End Sub
+
+'''Abre o formulário de cadastro de fornecedores
+Sub FormularioFornecedores()
+    Planilha3.Select
+    cadFornecedores.Show
+End Sub
+
+'''Abre o formulário variante de cadastro de fornecedor para edição de fornecedor
+Sub FormularioEditFornecedor()
+    Planilha3.Select
+    visFornecedores.Show
+End Sub
+
+'''Abre formulário de cadatro de clientes
+Sub FormularioClientes()
+    Planilha7.Select
+    cadClientes.Show
+End Sub
+
+'''Abre o formulário variante de cadastro de clientes para edição de cliente
+Sub FormularioEditClientes()
+    Planilha7.Select
+    visClientes.Show
+End Sub
+
+'''Abre o formulário de cadastro de materiais
+Sub FormularioCadProdutos()
+    Planilha1.Select
+    cadProdutos.Show
+End Sub
+
+'''Abre o formulário variante de cadastro de materiais para edição de materiais
+Sub FormularioEditProdutos()
+    Planilha1.Select
+    visProdutos.Show
+End Sub
+
+'''Abre o formulário de movimentação de materiais
+Sub FormularioMovimentos()
+    Planilha4.Select
+    fluxoProdutos.Show
+End Sub
