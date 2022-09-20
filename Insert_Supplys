@@ -1,0 +1,63 @@
+Private Sub cmdCancelaCadFornecedor_Click()
+    Planilha1.Protect Password:="Supersan"
+    Unload Me
+End Sub
+
+Private Sub cmdSalvaADDFornecedor_Click()
+    Planilha1.Unprotect Password:="Supersan"
+    RegistrarProdutos
+    Planilha1.Protect Password:="Supersan"
+    Unload Me
+    cadProdutos.Show
+End Sub
+
+Private Sub cmdSalvaESCProduto_Click()
+    RegistrarProdutos
+    Unload Me
+End Sub
+
+Private Sub txtDescricao_Change()
+    txtDescricao = UCase(txtDescricao)
+End Sub
+
+Private Sub txtQtdP_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 Then
+        If KeyAscii <> 44 Then
+            KeyAscii = 0
+        End If
+    End If
+End Sub
+
+Private Sub txtNomeProduto_Change()
+    txtNomeProduto = UCase(txtNomeProduto)
+End Sub
+
+Private Sub UserForm_Activate()
+    Planilha1.Unprotect Password:="Supersan"
+    
+    cbcat.RowSource = "categoria"
+    cbund.RowSource = "medida"
+    
+End Sub
+
+'REGISTRAR ITENS NA LISTA
+Function RegistrarProdutos()
+    indice = WorksheetFunction.CountA(Planilha1.Range("A:A")) + 1
+    
+    If WorksheetFunction.CountIf(Planilha1.Range("C:C"), cbcat.Value) = 0 Then
+        contador = 1
+    Else
+        contador = WorksheetFunction.CountIf(Planilha1.Range("C:C"), cbcat.Value) + 1
+    End If
+    
+    codigo = WorksheetFunction.VLookup(cbcat.Value, Planilha5.Range("G1:H18"), 2, False) + Format(contador, "000")
+    
+    Planilha1.Cells(indice, 1) = codigo
+    Planilha1.Cells(indice, 2) = txtNomeProduto.Value
+    Planilha1.Cells(indice, 3) = cbcat.Value
+    Planilha1.Cells(indice, 4) = txtQtdP.Value
+    Planilha1.Cells(indice, 5) = cbund.Value
+    Planilha1.Cells(indice, 6) = txtDescricao.Value
+    
+    Planilha1.Protect Password:="Supersan"
+End Function
