@@ -1,0 +1,180 @@
+'''Função do botão cancelar
+Private Sub cmdCancelarCl_Click()
+    Planilha7.Protect Password:="Supersan"
+    Unload Me
+End Sub
+
+'''Função do botão editar
+Private Sub cmdEditarCl_Click()
+    EditarCliente
+    desbloqueartxt
+    txtNomeCliente.Value = cbNomeCliente.Value
+    cbCCusto.RowSource = "CCUSTOS"
+End Sub
+
+'''Função do botão salvar
+Private Sub cmdSalvarCl_Click()
+    Planilha7.Unprotect Password:="Supersan"
+    
+    Dim escolha As VbMsgBoxResult
+    
+    escolha = MsgBox("Confirmar Alteração?", vbYesNo, "ATENÇÃO")
+    
+    If escolha = vbYes Then
+        
+        indice = WorksheetFunction.Match(txtCodCliente.Value, Planilha7.Range("A:A"), 0)
+        
+        Cells(indice, 2) = txtCPF.Value
+        Cells(indice, 3) = txtNomeCliente.Value
+        Cells(indice, 4) = txtSetor.Value
+        Cells(indice, 5) = txtCCusto.Value
+        Cells(indice, 6) = txtTel.Value
+        Cells(indice, 7) = txtEmail.Value
+        
+        Planilha7.Protect Password:="Supersan"
+        Unload Me
+        visClientes.Show
+    End If
+
+End Sub
+
+'''Função do botão voltar
+Private Sub cmdVoltarCl_Click()
+    Unload Me
+    visClientes.Show
+End Sub
+
+'''Início do form
+Private Sub UserForm_Activate()
+    cbNomeCliente.RowSource = "NomeCliente"
+    ConsultarCliente
+    bloqueartxt
+End Sub
+
+'BOTÃO PESQUISAR
+Private Sub cmdPesquisarCl_Click()
+    Planilha7.Unprotect Password:="Supersan"
+    cmdEditarCl.Visible = True
+    
+    desbloqueartxt
+    InserirDados
+    bloqueartxt
+    
+    Planilha7.Protect Password:="Supersan"
+    
+End Sub
+
+'CAMPOS BLOQUEADOS
+Function bloqueartxt()
+    txtCodCliente.Enabled = False
+    txtCPF.Enabled = False
+    txtNomeCliente.Enabled = False
+    txtSetor.Enabled = False
+    txtCCusto.Enabled = False
+    txtTel.Enabled = False
+    txtEmail.Enabled = False
+End Function
+
+'CAMPOS DESBLOQUEADOS
+Function desbloqueartxt()
+    txtCodCliente.Enabled = True
+    txtCPF.Enabled = True
+    txtNomeCliente.Enabled = True
+    txtSetor.Enabled = True
+    cbCCusto.Enabled = True
+    txtTel.Enabled = True
+    txtEmail.Enabled = True
+End Function
+
+'LAYOUT CONSULTAR
+Function ConsultarCliente()
+    cmdSalvarCl.Visible = False
+    cmdVoltarCl.Visible = False
+    cmdEditarCl.Visible = False
+    cmdCancelarCl.Visible = True
+    cmdPesquisarCl.Visible = True
+    txtNomeCliente.Visible = False
+    cbNomeCliente.Visible = True
+    cbCCusto.Visible = False
+    txtCCusto.Visible = True
+End Function
+
+'LAYOUT EDITAR
+Function EditarCliente()
+    cmdSalvarCl.Visible = True
+    cmdVoltarCl.Visible = True
+    cmdEditarCl.Visible = True
+    cmdCancelarCl.Visible = False
+    cmdPesquisarCl.Visible = False
+    txtNomeCliente.Visible = True
+    txtNomeCliente = cbNomeCliente.Value
+    cbNomeCliente.Visible = False
+    cbCCusto.Visible = True
+    txtCCusto.Visible = False
+End Function
+
+'INSERIR DADOS
+Function InserirDados()
+    indice = WorksheetFunction.Match(cbNomeCliente.Value, Planilha7.Range("C:C"), 0)
+    
+    txtCodCliente = Cells(indice, 1).Value
+    txtCPF = Cells(indice, 2).Value
+    txtSetor = Cells(indice, 4).Value
+    txtCCusto = Cells(indice, 5).Value
+    txtTel = Cells(indice, 6).Value
+    txtEmail = Cells(indice, 7).Value
+End Function
+
+'FORMATANDO O CAMPO DE CPF PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtCPF_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+    
+    If Len(txtCPF) = 3 Then
+        txtCPF = txtCPF + "."
+    End If
+    
+    If Len(txtCPF) = 7 Then
+        txtCPF = txtCPF + "."
+    End If
+    
+    If Len(txtCPF) = 11 Then
+        txtCPF = txtCPF + "-"
+    End If
+End Sub
+
+'EDITANDO O CAMPO NOME PARA CONVERTER O VALOR EM MAIÚSCULAS
+Private Sub txtNome_Change()
+    txtNome = UCase(txtNomeCliente)
+End Sub
+
+'EDITANDO O CAMPO SETOR PARA CONVERTER O VALOR EM MAIÚSCULAS
+Private Sub txtSetor_Change()
+    txtSetor = UCase(txtSetor)
+End Sub
+
+'FORMATANDO O CAMPO DE TELEFONE PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtTel_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+    
+    If Len(txtTel) = 0 Then
+        txtTel = txtTel + "("
+    End If
+        
+    If Len(txtTel) = 3 Then
+        txtTel = txtTel + ") "
+    End If
+    
+    If Len(txtTel) = 10 Then
+        txtTel = txtTel + "-"
+    End If
+
+End Sub
+
+'EDITANDO O CAMPO EMAIL PARA CONVERTER O VALOR EM MAIÚSCULAS E INSERIR UM SUFIXO PADRÃO
+Private Sub txtEmail_Change()
+    txtEmail = UCase(txtEmail)
+End Sub
