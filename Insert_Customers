@@ -1,0 +1,123 @@
+'DEFINIÇÕES GERAIS DA ATIVAÇÃO DO FORM
+Private Sub UserForm_Activate()
+        
+    Planilha7.Unprotect Password:="Supersan"
+    
+    indice = WorksheetFunction.CountA(Planilha7.Range("A:A"))
+    txtCodCliente = "CLI" + Format(indice - 1, "000")
+    
+    cbCCusto.RowSource = "CCUSTOS"
+    
+    End Sub
+    
+'FORMATANDO O CAMPO DE CPF PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtCPF_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+    
+    If Len(txtCPF) = 3 Then
+        txtCPF = txtCPF + "."
+    End If
+    
+    If Len(txtCPF) = 7 Then
+        txtCPF = txtCPF + "."
+    End If
+    
+    If Len(txtCPF) = 11 Then
+        txtCPF = txtCPF + "-"
+    End If
+End Sub
+
+'EDITANDO O CAMPO NOME PARA CONVERTER O VALOR EM MAIÚSCULAS
+Private Sub txtNome_Change()
+    txtNome = UCase(txtNome)
+End Sub
+
+'EDITANDO O CAMPO SETOR PARA CONVERTER O VALOR EM MAIÚSCULAS
+Private Sub txtSetor_Change()
+    txtSetor = UCase(txtSetor)
+End Sub
+
+'FORMATANDO O CAMPO DE TELEFONE PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtTel_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+    
+    If Len(txtTel) = 0 Then
+        txtTel = txtTel + "("
+    End If
+        
+    If Len(txtTel) = 3 Then
+        txtTel = txtTel + ") "
+    End If
+    
+    If Len(txtTel) = 10 Then
+        txtTel = txtTel + "-"
+    End If
+
+End Sub
+
+'EDITANDO O CAMPO EMAIL PARA CONVERTER O VALOR EM MAIÚSCULAS E INSERIR UM SUFIXO PADRÃO
+Private Sub txtEmail_Change()
+    txtEmail = UCase(txtEmail)
+End Sub
+'FUNÇÃO DO BOTÃO CANCELAR
+Private Sub cmdCancelaCadFornecedor_Click()
+    Planilha7.Protect Password:="Supersan"
+    Unload Me
+End Sub
+
+'FUNÇÃO DO BOTÃO SALVAR
+Private Sub cmdSalvarESC_Click()
+
+    indice = WorksheetFunction.CountA(Planilha7.Range("A:A"))
+    txtCodCliente = "CLI" + Format(indice - 1, "000")
+    
+    Dim decisao As VbMsgBoxResult
+    
+    decisao = MsgBox("CONFIRMAR CADASTRO?", vbYesNo, "ATENÇÃO")
+    If decisao = vbYes Then
+        Cells(indice + 1, 1).Value = txtCodCliente
+        Cells(indice + 1, 2).Value = txtCPF
+        Cells(indice + 1, 3).Value = txtNome
+        Cells(indice + 1, 4).Value = txtSetor
+        Cells(indice + 1, 5).Value = cbCCusto
+        Cells(indice + 1, 6).Value = txtTel
+        Cells(indice + 1, 7).Value = txtEmail
+        
+        Planilha7.Protect Password:="Supersan"
+        Unload cadClientes
+    End If
+    
+End Sub
+
+'FUNÇÃO DO BOTÃO SALVAR E CADASTRAR OUTRO
+Private Sub cmdSalvarContinua_Click()
+
+    indice = WorksheetFunction.CountA(Planilha7.Range("A:A"))
+    txtCodCliente = "CLI" + Format(indice - 1, "000")
+    
+    Dim decisao As VbMsgBoxResult
+    
+    decisao = MsgBox("CONFIRMAR CADASTRO?", vbYesNo, "ATENÇÃO")
+    If decisao = vbYes Then
+        Cells(indice + 1, 1).Value = txtCodCliente
+        Cells(indice + 1, 2).Value = txtCPF
+        Cells(indice + 1, 3).Value = txtNome
+        Cells(indice + 1, 4).Value = txtSetor
+        Cells(indice + 1, 5).Value = cbCCusto
+        Cells(indice + 1, 6).Value = txtTel
+        Cells(indice + 1, 7).Value = txtEmail
+        
+        Planilha7.Protect Password:="Supersan"
+        Unload cadClientes
+    End If
+    cadClientes.Show
+
+End Sub
+
+Private Sub UserForm_Terminate()
+    Planilha7.Protect Password:="Supersan"
+End Sub
