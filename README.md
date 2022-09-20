@@ -11,7 +11,9 @@
   Existe um caminho a ser seguido, para que não haja inconsistência:
   
 > Não é possível dar entrada/saída em materiais que não tenham sido previamente cadastrados
+
 > Não é possível dar saída em materiais sem discriminar o cliente interno que fez a requisição
+
 > Não é possível dar entrada em materiais sem discriminar de qual fornecedor o material foi comprado
 
 ## Reprodução
