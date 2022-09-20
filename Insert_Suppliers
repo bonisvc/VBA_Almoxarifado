@@ -1,0 +1,180 @@
+'DEFININDO A AÇÃO DO BOTÃO CANCELAR
+Private Sub cmdCancelaCadFornecedor_Click()
+    Dim decide As VbMsgBoxResult
+    decide = MsgBox("CANCELAR CADASTRO?", vbYesNo, "ATENÇÃO")
+    If decide = vbYes Then
+        Planilha3.Protect Password:="Supersan"
+        Unload cadFornecedores
+    End If
+End Sub
+
+'ROTINA PARA INCLUIR O CÓDIGO DO FORNECEDOR AUTOMATICAMENTE AO ABRIR O FORMULÁRIO E A CAIXA DE COMBINAÇÃO PARA RECEBER OS ESTADOS
+Private Sub UserForm_Activate()
+    
+    Planilha3.Unprotect Password:="Supersan"
+    
+    contador = WorksheetFunction.CountA(Planilha3.Range("A:A"))
+    txtCodFornecedor = "FNC" + Format(contador - 1, "000")
+    cbUF.RowSource = "UFS"
+    
+End Sub
+
+'IMPEDINDO A DIGITAÇÃO NA COMBOBOX
+Private Sub cbUF_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    KeyAscii = 0
+End Sub
+
+'FORMATANDO O CAMPO DE RAZÃO SOCIAL PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtRazaoSocial_Change()
+    txtRazaoSocial = UCase(txtRazaoSocial)
+End Sub
+
+'FORMATANDO O CAMPO DE CNPJ PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtCNPJFornecedor_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+    
+    If Len(txtCNPJFornecedor) = 2 Then
+        txtCNPJFornecedor = txtCNPJFornecedor + "."
+    End If
+    If Len(txtCNPJFornecedor) = 6 Then
+        txtCNPJFornecedor = txtCNPJFornecedor + "."
+    End If
+    
+    If Len(txtCNPJFornecedor) = 10 Then
+        txtCNPJFornecedor = txtCNPJFornecedor + "/"
+    End If
+    If Len(txtCNPJFornecedor) = 15 Then
+        txtCNPJFornecedor = txtCNPJFornecedor + "-"
+    End If
+End Sub
+
+'FORMATANDO O CAMPO DE NOME FANTASIA PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtNomeFantasia_Change()
+    txtNomeFantasia = UCase(txtNomeFantasia)
+End Sub
+
+'FORMATANDO O CAMPO DE CEP PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtCEP_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+    
+    If Len(txtCEP) = 2 Then
+        txtCEP = txtCEP + "."
+    End If
+    If Len(txtCEP) = 6 Then
+        txtCEP = txtCEP + "-"
+    End If
+
+End Sub
+
+'FORMATANDO O CAMPO DE LOGRADOURO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtLogradouro_Change()
+    txtLogradouro = UCase(txtLogradouro)
+End Sub
+
+Private Sub txtLogradouro_Change_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 65 Or KeyAscii > 122 And (KeyAscii <> 8 And KeyAscii <> 13 And KeyAscii <> 32) Then
+        KeyAscii = 0
+    End If
+End Sub
+
+'FORMATANDO O CAMPO DE BAIRRO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtBairro_Change()
+    txtBairro = UCase(txtBairro)
+End Sub
+
+'FORMATANDO O CAMPO DE MUNICÍPIO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtMunicipio_Change()
+    txtMunicipio = UCase(txtMunicipio)
+End Sub
+
+Private Sub txtMunicipio_Change_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 65 Or KeyAscii > 122 And (KeyAscii <> 8 And KeyAscii <> 13 And KeyAscii <> 32) Then
+        KeyAscii = 0
+    End If
+End Sub
+
+'FORMATANDO O CAMPO SEGMENTO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtSegmento_Change()
+    txtSegmento = UCase(txtSegmento)
+End Sub
+
+Private Sub txtSegmento_Change_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    If KeyAscii < 65 Or KeyAscii > 122 And (KeyAscii <> 8 And KeyAscii <> 13 And KeyAscii <> 32) Then
+        KeyAscii = 0
+    End If
+End Sub
+
+'FORMATANDO O CAMPO NUMERO PARA RECEBER APENAS VALORES NUMÉRICOS NO FORMATO ESPECÍFICO
+Private Sub txtNumero_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+
+    If KeyAscii < 48 Or KeyAscii > 57 And (KeyAscii <> 8 And KeyAscii <> 13) Then
+        KeyAscii = 0
+    End If
+End Sub
+
+'FORMATANDO O CAMPO COMPLEMENTO PARA RECEBER APENAS AS LETRAS REGULARES DO ALFABETO EM CAIXA ALTA
+Private Sub txtComplemento_Change()
+    txtComplemento = UCase(txtComplemento)
+End Sub
+
+'DEFININDO A FUNÇÃO DO BOTÃO SALVAR
+Private Sub cmdSalvaESCFornecedor_Click()
+    contador = WorksheetFunction.CountA(Planilha3.Range("A:A"))
+    txtCodFornecedor = "FNC" + Format(contador - 1, "000")
+    
+    Dim decisao As VbMsgBoxResult
+    
+    decisao = MsgBox("CONFIRMAR CADASTRO?", vbYesNo, "ATENÇÃO")
+    If decisao = vbYes Then
+        Cells(contador + 1, 1).Value = txtCodFornecedor
+        Cells(contador + 1, 3).Value = txtRazaoSocial
+        Cells(contador + 1, 2).Value = txtCNPJFornecedor
+        Cells(contador + 1, 4).Value = txtNomeFantasia
+        Cells(contador + 1, 5).Value = txtCEP
+        Cells(contador + 1, 6).Value = txtLogradouro
+        Cells(contador + 1, 7).Value = txtNumero
+        Cells(contador + 1, 8).Value = txtComplemento
+        Cells(contador + 1, 9).Value = txtBairro
+        Cells(contador + 1, 10).Value = txtMunicipio
+        Cells(contador + 1, 11).Value = cbUF
+        Cells(contador + 1, 12).Value = txtSegmento
+        
+        Planilha3.Protect Password:="Supersan"
+        Unload cadFornecedores
+    End If
+End Sub
+
+Private Sub cmdSalvaADDFornecedor_Click()
+    contador = WorksheetFunction.CountA(Planilha3.Range("A:A"))
+    txtCodFornecedor = "FNC" + Format(contador - 1, "000")
+    
+    Dim decisao As VbMsgBoxResult
+    
+    decisao = MsgBox("CONFIRMAR CADASTRO?", vbYesNo, "ATENÇÃO")
+    If decisao = vbYes Then
+        Cells(contador + 1, 1).Value = txtCodFornecedor
+        Cells(contador + 1, 3).Value = txtRazaoSocial
+        Cells(contador + 1, 2).Value = txtCNPJFornecedor
+        Cells(contador + 1, 4).Value = txtNomeFantasia
+        Cells(contador + 1, 5).Value = txtCEP
+        Cells(contador + 1, 6).Value = txtLogradouro
+        Cells(contador + 1, 7).Value = txtNumero
+        Cells(contador + 1, 8).Value = txtComplemento
+        Cells(contador + 1, 9).Value = txtBairro
+        Cells(contador + 1, 10).Value = txtMunicipio
+        Cells(contador + 1, 11).Value = cbUF
+        Cells(contador + 1, 12).Value = txtSegmento
+        
+        Planilha3.Protect Password:="Supersan"
+        Unload cadFornecedores
+    End If
+    cadFornecedores.Show
+End Sub
+
+Private Sub UserForm_Terminate()
+    Planilha3.Protect Password:="Supersan"
+End Sub
